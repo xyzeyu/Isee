@@ -83,16 +83,22 @@ const chefBubbleText = document.getElementById("chefBubbleText");
 const butlerBubbleText = document.getElementById("butlerBubbleText");
 const husbandBubbleText = document.getElementById("husbandBubbleText");
 
-/* ===== Text elements ===== */
-const mansionTextEl  = document.getElementById("mansionText");
-const mission2TextEl = document.getElementById("mission2Text");
-const mission3TextEl = document.getElementById("mission3Text");
-
 /* ===== Buttons ===== */
 const nextBtn  = document.getElementById("nextBtn");
 const nextBtn3 = document.getElementById("nextBtn3");
 const nextBtn4 = document.getElementById("nextBtn4");
 const nextBtn5 = document.getElementById("nextBtn5");
+
+/* ✅ FIX: Always get the text element INSIDE the active screen */
+function getMansionTextEl(){
+  return document.querySelector("#mansionScreen .mansion-text") || document.getElementById("mansionText");
+}
+function getMission2TextEl(){
+  return document.querySelector("#mission2Screen .mansion-text") || document.getElementById("mission2Text");
+}
+function getMission3TextEl(){
+  return document.querySelector("#mission3Screen .mansion-text") || document.getElementById("mission3Text");
+}
 
 /* ===== Transition helper ===== */
 function runTransition(nextFn){
@@ -153,7 +159,6 @@ function loseHeart(){
 /* ===== Case progress (unlock + done) ===== */
 const LS_UNLOCKED = "SEE_unlockedCase";
 const LS_CASE1_DONE = "SEE_case1_done";
-/* ✅ NEW */
 const LS_CASE2_DONE = "SEE_case2_done";
 
 let unlockedCase = Number(localStorage.getItem(LS_UNLOCKED) || "1");
@@ -164,7 +169,6 @@ function markCaseDone(caseNum){
     unlockedCase = Math.max(unlockedCase, 2);
     localStorage.setItem(LS_UNLOCKED, String(unlockedCase));
   }
-  /* ✅ NEW: Case 2 done unlocks Case 3 */
   if(caseNum === 2){
     localStorage.setItem(LS_CASE2_DONE, "1");
     unlockedCase = Math.max(unlockedCase, 3);
@@ -181,14 +185,12 @@ function renderCaseCards(){
     card.classList.toggle("locked", locked);
   });
 
-  // DONE badge on case 1
   const case1Done = localStorage.getItem(LS_CASE1_DONE) === "1";
   const case1Card = document.querySelector('.case-card[data-case="1"]');
   if(case1Card){
     case1Card.classList.toggle("done", case1Done);
   }
 
-  // ✅ DONE badge on case 2
   const case2Done = localStorage.getItem(LS_CASE2_DONE) === "1";
   const case2Card = document.querySelector('.case-card[data-case="2"]');
   if(case2Card){
@@ -269,13 +271,11 @@ function openCase(n){
     return;
   }
 
-  /* ✅ NEW: Case 2 (Home Alone) */
   if(n === 2){
-    playBGM(bgmMenu); // no new audio file needed
+    playBGM(bgmMenu);
     runTransition(() => {
       hideAll();
       case2IntroScreen.classList.add("active");
-      // Hearts exist globally, but Case 2 won't change them.
       renderHearts();
       resetCase2Intro();
     });
@@ -292,6 +292,8 @@ function openCase(n){
 
 /* ===== Typewriter utils ===== */
 function typewriter(el, fullText, speedMs, state){
+  if(!el) return; // ✅ prevent null crashes
+
   stopTypewriter(state, true);
   state.isTyping = true;
   state.i = 0;
@@ -321,18 +323,20 @@ function stopTypewriter(state, clear){
 function finishTypewriter(state){
   if(!state.isTyping) return;
   stopTypewriter(state, false);
-  state.el.textContent = state.fullText;
+  if(state.el) state.el.textContent = state.fullText;
 }
 
 /* ===== Scene 1 ===== */
-const s1 = { timer:null, isTyping:false, i:0, el:mansionTextEl, fullText:"" };
+const s1 = { timer:null, isTyping:false, i:0, el:null, fullText:"" };
 const scene1Text =
   "The mansion fell into silence when the power suddenly went out. Darkness swallowed the halls, and everyone inside froze where they stood.";
 
 function resetScene1(){
+  const el = getMansionTextEl();
+  s1.el = el;
   s1.fullText = scene1Text;
   nextBtn.onclick = mansionNext;
-  setTimeout(() => typewriter(mansionTextEl, scene1Text, 22, s1), 320);
+  setTimeout(() => typewriter(el, scene1Text, 22, s1), 320);
 }
 function mansionNext(){
   if(s1.isTyping){ finishTypewriter(s1); return; }
@@ -344,17 +348,20 @@ function mansionNext(){
 }
 
 /* ===== Scene 2 (normal story) ===== */
-const s2 = { timer:null, isTyping:false, i:0, el:mission2TextEl, fullText:"" };
+const s2 = { timer:null, isTyping:false, i:0, el:null, fullText:"" };
 const scene2Text =
   "The blackout lasted only a few minutes, but when the lights finally flickered back on, panic filled the air. At the foot of the grand staircase, the maid was found dead, her body cold and unmoving.";
 
 function resetScene2(){
+  const el = getMission2TextEl();
+  s2.el = el;
+
   mission2Return.onclick = backToCases;
   nextBtn2.style.display = "";
   nextBtn2.onclick = mission2Next;
 
   s2.fullText = scene2Text;
-  setTimeout(() => typewriter(mission2TextEl, scene2Text, 22, s2), 320);
+  setTimeout(() => typewriter(el, scene2Text, 22, s2), 320);
 }
 
 function mission2Next(){
@@ -367,16 +374,19 @@ function mission2Next(){
 }
 
 /* ===== Scene 3 ===== */
-const s3 = { timer:null, isTyping:false, i:0, el:mission3TextEl, fullText:"" };
+const s3 = { timer:null, isTyping:false, i:0, el:null, fullText:"" };
 const scene3Text = "solve the mystery behind the death of the maid...";
 
 function resetScene3(){
+  const el = getMission3TextEl();
+  s3.el = el;
+
   nextBtn2.style.display = "";
   mission2Return.onclick = backToCases;
 
   s3.fullText = scene3Text;
   nextBtn3.onclick = mission3Next;
-  setTimeout(() => typewriter(mission3TextEl, scene3Text, 22, s3), 220);
+  setTimeout(() => typewriter(el, scene3Text, 22, s3), 220);
 }
 function mission3Next(){
   if(s3.isTyping){ finishTypewriter(s3); return; }
@@ -412,7 +422,10 @@ function showWrongMessage(text){
 
     stopTypewriter(s2, true);
     s2.fullText = text;
-    typewriter(mission2TextEl, text, 18, s2);
+
+    const el = getMission2TextEl();
+    s2.el = el;
+    typewriter(el, text, 18, s2);
 
     renderHearts();
   });
@@ -592,7 +605,6 @@ function stopTypingAll(){
   stopTypewriter(bState, true);
   stopTypewriter(hState, true);
 
-  // ✅ case 2
   stopTypewriter(c2IntroState, true);
   stopTypewriter(c2WrongState, true);
   stopTypewriter(c2CorrectState, true);
@@ -600,7 +612,6 @@ function stopTypingAll(){
 
 /* =========================
    ✅ CASE 2: HOME ALONE LOGIC
-   - Hearts do NOTHING here (no loseHeart(), no hearts=0 lose)
 ========================= */
 
 const c2IntroState   = { timer:null, isTyping:false, i:0, el:case2IntroTextEl, fullText:"" };
@@ -613,7 +624,7 @@ const CASE2_INTRO_TEXT =
 const CASE2_CLUE_TEXT =
   "David lived alone, yet on the table were two glasses of water, one unfinished and one empty. Proving there had been someone else in the room with him. This wasn't a suicide.";
 
-let case2Chosen = null; // "suicide" | "murder" | null
+let case2Chosen = null;
 
 function resetCase2Intro(){
   case2Chosen = null;
@@ -626,7 +637,7 @@ function case2IntroNext(){
   runTransition(() => {
     hideAll();
     case2InspectScreen.classList.add("active");
-    renderHearts(); // display only
+    renderHearts();
   });
 }
 
@@ -642,7 +653,6 @@ function case2InspectNext(){
 function case2Pick(which){
   case2Chosen = which;
 
-  // Go straight to the feedback screen (like slides)
   if(which === "suicide"){
     runTransition(() => {
       hideAll();
@@ -667,16 +677,13 @@ function case2Pick(which){
 }
 
 function case2ChooseNext(){
-  // keep Next like the slide, but require a choice first
   if(!case2Chosen){
     alert("Choose first.");
     return;
   }
-  // If chosen, we already transitioned to wrong/correct immediately.
 }
 
 function case2WrongNext(){
-  // go back to choose so player can pick again
   runTransition(() => {
     hideAll();
     case2ChooseScreen.classList.add("active");
@@ -686,7 +693,6 @@ function case2WrongNext(){
 }
 
 function case2CorrectNext(){
-  // Case 2 finished: mark done + unlock case 3 then return to cases menu
   markCaseDone(2);
   playBGM(bgmMenu);
   runTransition(() => {
@@ -717,7 +723,6 @@ window.judgeSuspect = judgeSuspect;
 window.backToSuspects = backToSuspects;
 window.wifeResultNext = wifeResultNext;
 
-/* ✅ Case 2 expose */
 window.case2IntroNext = case2IntroNext;
 window.case2InspectNext = case2InspectNext;
 window.case2Pick = case2Pick;
