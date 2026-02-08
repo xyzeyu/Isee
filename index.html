@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SEE</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div id="transition" class="transition"></div>
+
+  <!-- MENU -->
+  <div id="menuScreen" class="screen active bg">
+    <div class="menu">
+      <button class="btn" onclick="startGame()">Start Game</button>
+      <button class="btn" onclick="openAbout()">About</button>
+      <button class="btn" onclick="openCredits()">Credits</button>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <div id="aboutScreen" class="screen bg">
+    <div class="about-pill">About</div>
+
+    <div class="about-shell">
+      <div class="about-card">
+        <div class="about-title">About the game</div>
+        <ul class="about-list">
+          <li>Investigate each character and examine their unique features throughout the game.</li>
+          <li>Carefully check every suspect's alibi and analyze the details, as each character contains hidden clues.</li>
+          <li>Compare statements and observe inconsistencies to determine who is innocent or suspicious.</li>
+          <li>The Player is given three hearts, and each mistake will reduce one heart.</li>
+          <li>When all hearts are used, the player must wait for a 30-minute cooldown before the hearts are fully restored.</li>
+          <li>Successfully solving the first case will unlock the second case.</li>
+          <li>Completing the second case will unlock the third and final case.</li>
+          <li>Use logic, observation, and deduction skills to solve each case and progress through the game.</li>
+        </ul>
+      </div>
+    </div>
+
+    <button class="return-btn" onclick="goMenuFromAbout()">Return</button>
+  </div>
+
+  <!-- CASES -->
+  <div id="casesScreen" class="screen bg">
+    <div class="cases-header-badge" aria-hidden="true">
+      <div class="see-logo">
+        <div class="see-eyes"></div>
+        <div class="see-text">SEE</div>
+      </div>
+      <div class="cases-pill">The Cases</div>
+    </div>
+
+    <div class="cases-frame">
+      <!-- CASE 1 -->
+      <div class="case-card" data-case="1">
+        <div class="case-img-wrap">
+          <img class="case-img" src="game/case 1.jpg" alt="The Mansion">
+          <div class="done-badge" aria-hidden="true">DONE</div>
+        </div>
+        <div class="case-info">
+          <div class="case-title">The<br/>Mansion</div>
+          <div class="case-sub">Who killed<br/>the maid?</div>
+        </div>
+        <button class="case-btn" onclick="openCase(1)">SOLVE</button>
+      </div>
+
+      <!-- CASE 2 -->
+      <div class="case-card locked" data-case="2">
+        <div class="case-img-wrap">
+          <img class="case-img" src="game/case 2.jpg" alt="The Condo">
+          <div class="chain-overlay"></div>
+
+          <!-- ✅ NEW: DONE badge for Case 2 -->
+          <div class="done-badge" aria-hidden="true">DONE</div>
+        </div>
+        <div class="case-info">
+          <div class="case-title">The Condo</div>
+          <div class="case-sub">Is it<br/>suicide or<br/>murder?</div>
+        </div>
+        <button class="case-btn" onclick="openCase(2)">SOLVE</button>
+      </div>
+
+      <!-- CASE 3 (locked + NEW UPDATE on HOTEL top-left) -->
+      <div class="case-card locked hotel-card" data-case="3">
+        <div class="case-img-wrap">
+          <img class="case-img" src="game/case 3.jpg" alt="The Hotel">
+          <div class="chain-overlay"></div>
+          <div class="ribbon-new">NEW UPDATE!</div>
+        </div>
+        <div class="case-info">
+          <div class="case-title">The Hotel</div>
+          <div class="case-sub">hard mode</div>
+        </div>
+        <button class="case-btn" onclick="openCase(3)">SOLVE</button>
+      </div>
+
+      <!-- PART 2 -->
+      <div class="case-card part2-card">
+        <div class="case-img-wrap coming-wrap">
+          <div class="coming-q">?</div>
+          <div class="coming-sticker">COMING<br/>SOON!</div>
+          <div class="valentine-card" aria-hidden="true">
+            <div class="val-date">14</div>
+            <div class="val-sub">Valentine</div>
+          </div>
+          <div class="hearts-garland" aria-hidden="true"></div>
+        </div>
+        <div class="case-info">
+          <div class="case-title">PART 2</div>
+          <div class="case-sub">COMING SOON!</div>
+        </div>
+        <button class="case-btn" onclick="alert('Coming soon!')">VIEW</button>
+      </div>
+    </div>
+
+    <button class="return-btn" onclick="goMenuFromCases()">Return</button>
+  </div>
+
+  <!-- SCENE 1 (intro bg) -->
+  <div id="mansionScreen" class="screen bg intro-bg">
+    <div class="case-header-pill">The Mansion</div>
+
+    <div class="hearts">
+      <span class="heart">❤</span><span class="heart">❤</span><span class="heart">❤</span>
+    </div>
+
+    <div class="bubble-wrap">
+      <div id="mansionText" class="mansion-text"></div>
+    </div>
+
+    <button id="nextBtn" class="next-btn" onclick="mansionNext()">Next</button>
+    <button class="return-btn" onclick="backToCases()">Return</button>
+  </div>
+
+  <!-- SCENE 2 (also used for WRONG-GUESS MESSAGE) -->
+  <div id="mission2Screen" class="screen bg mission2-bg">
+    <div class="case-header-pill">The Mansion</div>
+
+    <div class="hearts">
+      <span class="heart">❤</span><span class="heart">❤</span><span class="heart">❤</span>
+    </div>
+
+    <div class="bubble-wrap">
+      <div id="mission2Text" class="mansion-text"></div>
+    </div>
+
+    <button id="nextBtn2" class="next-btn" onclick="mission2Next()">Next</button>
+    <button id="mission2Return" class="return-btn" onclick="backToCases()">Return</button>
+  </div>
+
+  <!-- SCENE 3 -->
+  <div id="mission3Screen" class="screen bg mission3-bg">
+    <div class="case-header-pill">The Mansion</div>
+
+    <div class="hearts">
+      <span class="heart">❤</span><span class="heart">❤</span><span class="heart">❤</span>
+    </div>
+
+    <div class="bubble-wrap">
+      <div id="mission3Text" class="mansion-text"></div>
+    </div>
+
+    <button id="nextBtn3" class="next-btn" onclick="mission3Next()">Next</button>
+    <button class="return-btn" onclick="backToCases()">Return</button>
+  </div>
+
+  <!-- SCENE 4 -->
+  <div id="mission4Screen" class="screen bg mission4-bg">
+    <div class="case-header-pill">The Mansion</div>
+
+    <div class="hearts">
+      <span class="heart">❤</span><span class="heart">❤</span><span class="heart">❤</span>
+    </div>
+
+    <button id="nextBtn4" class="next-btn" onclick="mission4Next()">Next</button>
+    <button class="return-btn" onclick="backToCases()">Return</button>
+  </div>
+
+  <!-- SCENE 5 (Suspects) -->
+  <div id="mission5Screen" class="screen bg mission5-bg">
+    <div class="case-header-pill">The Mansion</div>
+
+    <div class="hearts">
+      <span class="heart">❤</span><span class="heart">❤</span><span class="heart">❤</span>
+    </div>
+
+    <div class="suspects-pill">Suspects</div>
+
+    <div class="suspect-label chef-label">Chef</div>
+    <div class="suspect-label wife-label">Wife</div>
+    <div class="suspect-label butler-label">Butler</div>
+    <div class="suspect-label husband-label">Husband</div>
+
+    <button class="alibi-btn chef-btn" onclick="openAlibi('chef')">Check Alibi</button>
+    <button class="alibi-btn wife-btn" onclick="openAlibi('wife')">Check Alibi</button>
+    <button class="alibi-btn butler-btn" onclick="openAlibi('butler')">Check Alibi</button>
+    <button class="alibi-btn husband-btn" onclick="openAlibi('husband')">Check Alibi</button>
+
+    <button id="nextBtn5" class="next-btn" onclick="mission5Next()">Next</button>
+    <button class="return-btn" onclick="backToCases()">Return</button>
+  </div>
+
+  <!-- ========================= -->
+  <!-- ✅ CASE 2: HOME ALONE -->
+  <!-- ========================= -->
+
+  <!-- CASE 2 - INTRO (Slide 1) -->
+  <div id="case2IntroScreen" class="screen bg case2-intro-bg">
+    <div class="case2-header">
+      <div class="case2-logo" aria-hidden="true"></div>
+      <div class="case2-title-pill">Home Alone</div>
+    </div>
+
+    <div class="hearts">
+      <span class="heart">❤</span><span class="heart">❤</span><span class="heart">❤</span>
+    </div>
+
+    <div class="bubble-wrap">
+      <div id="case2IntroText" class="mansion-text"></div>
+    </div>
+
+    <button id="case2IntroNext" class="next-btn" onclick="case2IntroNext()">Next</button>
+    <button class="return-btn" onclick="backToCases()">Return</button>
+  </div>
+
+  <!-- CASE 2 - INSPECT (Slide 2) -->
+  <div id="case2InspectScreen" class="screen bg case2-inspect-bg">
+    <div class="case2-header">
+      <div class="case2-logo" aria-hidden="true"></div>
+      <div class="case2-title-pill">Home Alone</div>
+    </div>
+
+    <div class="hearts">
+      <span class="heart">❤</span><span class="heart">❤</span><span class="heart">❤</span>
+    </div>
+
+    <div class="case2-objective-pill">Inspect the room</div>
+
+    <button id="case2InspectNext" class="next-btn" onclick="case2InspectNext()">Next</button>
+    <button class="return-btn" onclick="backToCases()">Return</button>
+  </div>
+
+  <!-- CASE 2 - CHOOSE (Slide 3) -->
+  <div id="case2ChooseScreen" class="screen bg case2-choose-bg">
+    <div class="case2-header">
+      <div class="case2-logo" aria-hidden="true"></div>
+      <div class="case2-title-pill">Home Alone</div>
+    </div>
+
+    <div class="hearts">
+      <span class="heart">❤</span><span class="heart">❤</span><span class="heart">❤</span>
+    </div>
+
+    <div class="case2-objective-pill">CHOOSE</div>
+
+    <div class="case2-choice-row">
+      <button class="case2-choice-btn" onclick="case2Pick('suicide')">SUICIDE</button>
+      <button class="case2-choice-btn" onclick="case2Pick('murder')">MURDER</button>
+    </div>
+
+    <button id="case2ChooseNext" class="next-btn" onclick="case2ChooseNext()">Next</button>
+    <button class="return-btn" onclick="backToCases()">Return</button>
+  </div>
+
+  <!-- CASE 2 - WRONG (Slide 4) -->
+  <div id="case2WrongScreen" class="screen bg case2-wrong-bg">
+    <div class="case2-header">
+      <div class="case2-logo" aria-hidden="true"></div>
+      <div class="case2-title-pill">Home Alone</div>
+    </div>
+
+    <div class="hearts">
+      <span class="heart">❤</span><span class="heart">❤</span><span class="heart">❤</span>
+    </div>
+
+    <div class="case2-verdict-top">SUICIDE</div>
+    <div class="case2-badge wrong">WRONG!</div>
+
+    <div class="case2-clue-box">
+      <div id="case2WrongText" class="case2-clue-text"></div>
+    </div>
+
+    <button id="case2WrongNext" class="next-btn" onclick="case2WrongNext()">Next</button>
+    <button class="return-btn" onclick="backToCases()">Return</button>
+  </div>
+
+  <!-- CASE 2 - CORRECT (Slide 5) -->
+  <div id="case2CorrectScreen" class="screen bg case2-correct-bg">
+    <div class="case2-header">
+      <div class="case2-logo" aria-hidden="true"></div>
+      <div class="case2-title-pill">Home Alone</div>
+    </div>
+
+    <div class="hearts">
+      <span class="heart">❤</span><span class="heart">❤</span><span class="heart">❤</span>
+    </div>
+
+    <div class="case2-verdict-top">MURDER</div>
+    <div class="case2-badge correct">CORRECT!</div>
+
+    <div class="case2-clue-box">
+      <div id="case2CorrectText" class="case2-clue-text"></div>
+    </div>
+
+    <button id="case2CorrectNext" class="next-btn" onclick="case2CorrectNext()">Next</button>
+    <button class="return-btn" onclick="backToCases()">Return</button>
+  </div>
+
+  <!-- WIFE ALIBI -->
+  <div id="wifeAlibiScreen" class="screen bg wife-alibi-bg">
+    <div class="case-header-pill">The Mansion</div>
+
+    <div class="hearts">
+      <span class="heart">❤</span><span class="heart">❤</span><span class="heart">❤</span>
+    </div>
+
+    <div id="notInnocentPill" class="not-innocent-pill">NOT INNOCENT!</div>
+    <div id="wifeXOverlay" class="x-overlay">✕</div>
+
+    <div class="alibi-bubble">
+      <div id="wifeBubbleText" class="alibi-text"></div>
+    </div>
+
+    <button id="innocentBtn" class="judge-btn innocent-btn" onclick="judgeSuspect('wife','innocent')">Innocent</button>
+    <button id="suspectBtn" class="judge-btn murderer-btn" onclick="judgeSuspect('wife','suspect')">Suspect</button>
+
+    <button class="return-btn" onclick="backToSuspects()">Return</button>
+  </div>
+
+  <!-- CHEF ALIBI -->
+  <div id="chefAlibiScreen" class="screen bg chef-alibi-bg">
+    <div class="case-header-pill">The Mansion</div>
+
+    <div class="hearts">
+      <span class="heart">❤</span><span class="heart">❤</span><span class="heart">❤</span>
+    </div>
+
+    <div class="alibi-bubble">
+      <div id="chefBubbleText" class="alibi-text"></div>
+    </div>
+
+    <button class="judge-btn innocent-btn" onclick="judgeSuspect('chef','innocent')">Innocent</button>
+    <button class="judge-btn murderer-btn" onclick="judgeSuspect('chef','suspect')">Suspect</button>
+
+    <button class="return-btn" onclick="backToSuspects()">Return</button>
+  </div>
+
+  <!-- BUTLER ALIBI -->
+  <div id="butlerAlibiScreen" class="screen bg butler-alibi-bg">
+    <div class="case-header-pill">The Mansion</div>
+
+    <div class="hearts">
+      <span class="heart">❤</span><span class="heart">❤</span><span class="heart">❤</span>
+    </div>
+
+    <div class="alibi-bubble">
+      <div id="butlerBubbleText" class="alibi-text"></div>
+    </div>
+
+    <button class="judge-btn innocent-btn" onclick="judgeSuspect('butler','innocent')">Innocent</button>
+    <button class="judge-btn murderer-btn" onclick="judgeSuspect('butler','suspect')">Suspect</button>
+
+    <button class="return-btn" onclick="backToSuspects()">Return</button>
+  </div>
+
+  <!-- HUSBAND ALIBI -->
+  <div id="husbandAlibiScreen" class="screen bg husband-alibi-bg">
+    <div class="case-header-pill">The Mansion</div>
+
+    <div class="hearts">
+      <span class="heart">❤</span><span class="heart">❤</span><span class="heart">❤</span>
+    </div>
+
+    <div class="alibi-bubble">
+      <div id="husbandBubbleText" class="alibi-text"></div>
+    </div>
+
+    <button class="judge-btn innocent-btn" onclick="judgeSuspect('husband','innocent')">Innocent</button>
+    <button class="judge-btn murderer-btn" onclick="judgeSuspect('husband','suspect')">Suspect</button>
+
+    <button class="return-btn" onclick="backToSuspects()">Return</button>
+  </div>
+
+  <!-- LOSE/WIN SCREEN -->
+  <div id="wifeResultScreen" class="screen bg wife-result-bg">
+    <div class="case-header-pill">The Mansion</div>
+
+    <div class="hearts">
+      <span class="heart">❤</span><span class="heart">❤</span><span class="heart">❤</span>
+    </div>
+
+    <div class="suspect-pill-top" id="resultPill">SUSPECT!</div>
+
+    <div class="result-bubble">
+      <div id="wifeResultText" class="result-text"></div>
+    </div>
+
+    <button class="next-btn" onclick="wifeResultNext()">Next</button>
+    <button class="return-btn" onclick="backToSuspects()">Return</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
